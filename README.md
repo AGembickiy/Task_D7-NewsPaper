@@ -101,4 +101,4 @@ NewsPaper/
 ```
 
 ## Автор
-AGembickiy 
+AGembickiy
