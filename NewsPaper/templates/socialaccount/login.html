@@ -1,0 +1,28 @@
+{% extends "layout/default.html" %}
+{% load i18n %}
+{% load static %}
+{% load socialaccount %}
+
+{% block title %}{% trans "Вход через Google" %}{% endblock %}
+
+{% block content %}
+<div class="auth-container">
+    <div class="form-style">
+        <h2 class="text-center mb-4">{% trans "Вход через Google" %}</h2>
+        <div class="text-center">
+            <p class="mb-4">{% trans "Вы будете перенаправлены на страницу входа Google для авторизации." %}</p>
+            {% provider_login_url 'google' as google_url %}
+            <p class="text-muted small">Debug: {{ google_url }}</p>
+            <div class="d-grid gap-2">
+                <a href="{{ google_url }}" class="btn btn-primary text-white" style="background-color: #4285F4; border-color: #4285F4;">
+                    <i class="fab fa-google me-2"></i><span style="color: white;">{% trans "Войти через Google" %}</span>
+                </a>
+            </div>
+            <div class="mt-3">
+                <p>{% trans "Или" %}</p>
+                <a href="{% url 'account_login' %}" class="text-decoration-none">{% trans "Вернуться к обычному входу" %}</a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %} 

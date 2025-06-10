@@ -1,0 +1,227 @@
+{% extends 'layout/default.html' %}
+{% load custom_filters %}
+
+{% block title %}Новости{% endblock %}
+
+{% block content %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Получаем CSRF-токен из cookie
+    function getCookie(name) {
+        let cookieValue = null;
+        if (document.cookie && document.cookie !== '') {
+            const cookies = document.cookie.split(';');
+            for (let i = 0; i < cookies.length; i++) {
+                const cookie = cookies[i].trim();
+                if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                    cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                    break;
+                }
+            }
+        }
+        return cookieValue;
+    }
+
+    window.updateRating = function(postId, type) {
+        const csrfToken = getCookie('csrftoken');
+        if (!csrfToken) {
+            console.error('CSRF token not found');
+            return;
+        }
+
+        fetch(`/news/${postId}/${type}/`, {
+            method: 'POST',
+            headers: {
+                'X-CSRFToken': csrfToken,
+                'Content-Type': 'application/json',
+                'Accept': 'application/json'
+            },
+            credentials: 'same-origin'
+        })
+        .then(response => {
+            if (!response.ok) {
+                return response.json().then(data => {
+                    throw new Error(data.error || 'Server error');
+                });
+            }
+            return response.json();
+        })
+        .then(data => {
+            if (data.error) {
+                throw new Error(data.error);
+            }
+            document.getElementById(`rating-${postId}`).textContent = data.rating;
+            document.getElementById(`author-rating-${postId}`).textContent = data.author_rating;
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('Произошла ошибка при обновлении рейтинга: ' + error.message);
+        });
+    };
+});
+</script>
+
+<div class="news-list">
+    <h1 class="mb-4">{{ title|censor }}</h1>
+
+    <div class="row mb-4">
+        <div class="col-md-8">
+            <div class="btn-group" role="group">
+                <a href="{% url 'news:home' %}" class="btn btn-outline-primary {% if not current_type %}active{% endif %}">
+                    Все публикации
+                </a>
+                <a href="{% url 'news:home' %}?type=NE" class="btn btn-outline-primary {% if current_type == 'NE' %}active{% endif %}">
+                    Новости
+                </a>
+                <a href="{% url 'news:home' %}?type=AR" class="btn btn-outline-primary {% if current_type == 'AR' %}active{% endif %}">
+                    Статьи
+                </a>
+            </div>
+        </div>
+        <div class="col-md-4 text-end">
+            {% if perms.news.add_post %}
+            <a href="{% url 'news:add' %}" class="btn btn-primary">
+                <i class="fas fa-plus"></i> Добавить публикацию
+            </a>
+            {% endif %}
+        </div>
+    </div>
+
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0">Фильтры</h5>
+                </div>
+                <div class="card-body">
+                    <form method="get" class="row g-3">
+                        <div class="col-md-3">
+                            <label for="id_date_time_creation">Дата публикации (от):</label>
+                            {{ filter.form.date_time_creation }}
+                        </div>
+                        <div class="col-md-3">
+                            <label for="id_post_status">Тип публикации:</label>
+                            {{ filter.form.post_status }}
+                        </div>
+                        <div class="col-md-3">
+                            <label for="id_author__user__username">Автор:</label>
+                            {{ filter.form.author__user__username }}
+                        </div>
+                        <div class="col-md-3">
+                            <label for="id_category">Категории:</label>
+                            {{ filter.form.category }}
+                        </div>
+                        <div class="col-12">
+                            <button type="submit" class="btn btn-primary">Применить фильтры</button>
+                            <a href="{% url 'news:home' %}" class="btn btn-secondary">Сбросить</a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    {% csrf_token %}
+    {% for post in news %}
+        <div class="post-item card mb-4">
+            <div class="card-body">
+                <h2 class="card-title">
+                    <a href="{% url 'news:news_id' post.id %}" class="text-decoration-none">{{ post.heading|censor }}</a>
+                </h2>
+                <div class="post-meta mb-2">
+                    <span class="me-3"><i class="far fa-calendar-alt"></i> {{ post.date_time_creation|date:"d.m.Y H:i" }}</span>
+                    <span class="me-3">
+                        <i class="far fa-user"></i> 
+                        {{ post.author.user.username }}
+                        {% if post.author.user.first_name or post.author.user.last_name %}
+                            ({{ post.author.user.first_name }} {{ post.author.user.last_name }})
+                        {% endif %}
+                        <small class="text-muted">(Рейтинг автора: <span id="author-rating-{{ post.id }}">{{ post.author.rating_author }}</span>)</small>
+                    </span>
+                    <span class="me-3">
+                        <i class="far fa-star"></i> 
+                        Рейтинг: <span id="rating-{{ post.id }}">{{ post.rating_post }}</span>
+                    </span>
+                    {% if user.is_authenticated %}
+                    <div class="btn-group btn-group-sm">
+                        <button type="button" onclick="updateRating({{ post.id }}, 'like')" class="btn btn-outline-success">
+                            <i class="fas fa-thumbs-up"></i>
+                        </button>
+                        <button type="button" onclick="updateRating({{ post.id }}, 'dislike')" class="btn btn-outline-danger">
+                            <i class="fas fa-thumbs-down"></i>
+                        </button>
+                    </div>
+                    {% endif %}
+                </div>
+                <div class="post-preview mb-3">
+                    {{ post.text_post|truncatewords_html:50|censor }}
+                </div>
+                <div class="post-meta">
+                    {% if post.post_status == 'AR' %}
+                        <span class="badge bg-primary">Статья</span>
+                    {% else %}
+                        <span class="badge bg-info">Новость</span>
+                    {% endif %}
+                    
+                    {% for category in post.category.all %}
+                        <span class="badge bg-secondary">{{ category.topic }}</span>
+                    {% endfor %}
+                    
+                    {% if post.author.user == request.user %}
+                        <div class="mt-2">
+                            <a href="{% url 'news:edit' post.id %}" class="btn btn-sm btn-outline-primary">
+                                <i class="fas fa-edit"></i> Редактировать
+                            </a>
+                            <a href="{% url 'news:delete' post.id %}" class="btn btn-sm btn-outline-danger">
+                                <i class="fas fa-trash"></i> Удалить
+                            </a>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    {% empty %}
+        <div class="alert alert-info">
+            Пока нет публикаций.
+        </div>
+    {% endfor %}
+
+    {% include 'news/parts/paginator.html' %}
+</div>
+
+<style>
+/* Стили для выпадающих списков */
+select.form-control {
+    color: #212529;
+    background-color: #fff;
+}
+select.form-control:not([multiple]) {
+    height: 38px;
+}
+select.form-control[multiple] {
+    height: auto;
+    min-height: 38px;
+    max-height: 200px;
+}
+select.form-control option {
+    color: #212529;
+    background-color: #fff;
+    padding: 8px;
+}
+select.form-control option:hover {
+    background-color: #f8f9fa;
+}
+select.form-control option:checked {
+    background-color: #0d6efd;
+    color: #fff;
+}
+
+.post-item {
+    transition: transform 0.2s;
+}
+.post-item:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+}
+</style>
+{% endblock %}

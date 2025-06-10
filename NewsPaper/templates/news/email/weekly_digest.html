@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>Еженедельная рассылка</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            color: #333;
+        }
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        .header {
+            background-color: #f8f9fa;
+            padding: 20px;
+            text-align: center;
+            border-radius: 5px;
+        }
+        .content {
+            padding: 20px;
+        }
+        .post {
+            margin-bottom: 20px;
+            padding: 15px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+        .post-title {
+            color: #007bff;
+            margin-bottom: 10px;
+        }
+        .post-preview {
+            margin-bottom: 10px;
+        }
+        .button {
+            display: inline-block;
+            padding: 10px 20px;
+            background-color: #007bff;
+            color: white;
+            text-decoration: none;
+            border-radius: 5px;
+            margin-top: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h2>Еженедельная рассылка новых публикаций</h2>
+        </div>
+        <div class="content">
+            <p>Здравствуйте, {{ user.username }}!</p>
+            <p>За последнюю неделю в категориях, на которые вы подписаны, появились новые публикации:</p>
+            
+            {% for category, posts in category_posts.items %}
+                <h3>Категория: {{ category.topic }}</h3>
+                {% for post in posts %}
+                    <div class="post">
+                        <h4 class="post-title">{{ post.heading }}</h4>
+                        <p class="post-preview">{{ post.preview }}</p>
+                        <p><small>Дата публикации: {{ post.date_time_creation|date:"d.m.Y H:i" }}</small></p>
+                        <a href="{{ site_url }}/news/{{ post.id }}/" class="button">Читать далее</a>
+                    </div>
+                {% endfor %}
+            {% endfor %}
+            
+            <p>С уважением,<br>Команда NewsPaper</p>
+        </div>
+    </div>
+</body>
+</html> 

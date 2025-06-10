@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>Добро пожаловать в NewsPaper!</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            color: #333;
+        }
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        .header {
+            background-color: #f8f9fa;
+            padding: 20px;
+            text-align: center;
+            border-radius: 5px;
+        }
+        .content {
+            padding: 20px;
+        }
+        .button {
+            display: inline-block;
+            padding: 10px 20px;
+            background-color: #007bff;
+            color: white;
+            text-decoration: none;
+            border-radius: 5px;
+            margin-top: 20px;
+        }
+        .features {
+            margin: 20px 0;
+            padding: 15px;
+            background-color: #f8f9fa;
+            border-radius: 5px;
+        }
+        .feature-item {
+            margin: 10px 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h2>Добро пожаловать в NewsPaper!</h2>
+        </div>
+        <div class="content">
+            <p>Здравствуйте, {{ user.username }}!</p>
+            
+            <p>Мы рады приветствовать вас в нашем новостном портале! Теперь вы можете:</p>
+            
+            <div class="features">
+                <div class="feature-item">📰 Читать новости и статьи</div>
+                <div class="feature-item">🔔 Подписываться на интересующие вас категории</div>
+                <div class="feature-item">📧 Получать уведомления о новых публикациях</div>
+                <div class="feature-item">⭐ Оценивать публикации и авторов</div>
+            </div>
+            
+            <p>Чтобы начать использовать все возможности портала, перейдите на главную страницу:</p>
+            
+            <a href="{{ site_url }}/news/" class="button">Перейти на главную</a>
+            
+            <p>Если у вас возникнут вопросы, не стесняйтесь обращаться к нам.</p>
+            
+            <p>С уважением,<br>Команда NewsPaper</p>
+        </div>
+    </div>
+</body>
+</html> 

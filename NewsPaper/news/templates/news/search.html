@@ -1,0 +1,32 @@
+{% extends 'layout/default.html' %}
+{% load custom_filters %}
+{% block title %}
+Поиск
+{% endblock %}
+{% block content %}
+
+<h1>Результат поиска</h1>
+<div style="margin-top: 50px;">
+    <form method="GET" class="form-style" style="display: flex; justify-content: space-evenly;">
+        {{ filter.form.as_p }}
+        <input class="btn btn-primary" type="submit" value="Найти">
+    </form>
+</div>
+<table class="table">
+    <tr>
+        <th scope="col">Дата</th>
+        <th scope="col">Статус поста</th>
+        <th scope="col">Автор</th>
+    </tr>
+    {% for search in filter.qs %}
+    <tr>
+        <td>{{ search.date_time_creation }}</td>
+        <td>{{ search.heading }}</td>
+        <td>{{ search.author.user.first_name }} {{ search.author.user.last_name }}</td>
+    </tr>
+    {% endfor %}
+</table>
+
+{% include 'news/parts/paginator.html' %}
+
+{% endblock %}

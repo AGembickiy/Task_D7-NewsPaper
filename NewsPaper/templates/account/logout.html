@@ -1,0 +1,27 @@
+{% extends "layout/default.html" %}
+{% load static %}
+{% load i18n %}
+
+{% block title %}Выход{% endblock %}
+
+{% block content %}
+<div class="auth-container">
+    <div class="form-style">
+        <h2 class="text-center mb-4">Выход</h2>
+        <p class="text-center mb-4">Вы уверены, что хотите выйти из системы?</p>
+        
+        <form method="post" action="{% url 'account_logout' %}">
+            {% csrf_token %}
+            {% if redirect_field_value %}
+                <input type="hidden" name="{{ redirect_field_name }}" value="{{ redirect_field_value }}" />
+            {% endif %}
+            <div class="d-grid gap-2">
+                <button type="submit" class="btn btn-primary">Выйти</button>
+            </div>
+            <div class="text-center mt-3">
+                <p>Или <a href="{% url 'account_login' %}" class="text-decoration-none">вернуться на страницу входа</a></p>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %} 

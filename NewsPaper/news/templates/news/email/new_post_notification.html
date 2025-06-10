@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>Новая публикация в категории {{ category.topic }}</title>
+</head>
+<body>
+    <h2>Здравствуйте, {{ subscriber.username }}!</h2>
+    <p>В категории "{{ category.topic }}" появилась новая публикация:</p>
+    
+    <div style="margin: 20px 0; padding: 15px; border: 1px solid #ddd; border-radius: 5px;">
+        <h3>{{ post.heading }}</h3>
+        <p><strong>Автор:</strong> {{ post.author }}</p>
+        <p><strong>Дата публикации:</strong> {{ post.date_time_creation|date:"d.m.Y H:i" }}</p>
+        <p><strong>Тип:</strong> {% if post.post_status == 'AR' %}Статья{% else %}Новость{% endif %}</p>
+        <div style="margin: 15px 0;">
+            {{ post.preview }}
+        </div>
+        <p>
+            <a href="{{ site_url }}{{ post.get_absolute_url }}" 
+               style="display: inline-block; padding: 10px 20px; background-color: #007bff; color: white; text-decoration: none; border-radius: 5px;">
+                Читать полностью
+            </a>
+        </p>
+    </div>
+
+    <p>Если вы хотите отписаться от уведомлений этой категории, перейдите по 
+        <a href="{{ site_url }}{% url 'news:unsubscribe_category' category.id %}">этой ссылке</a>.
+    </p>
+
+    <p>С уважением,<br>Команда новостного портала</p>
+</body>
+</html> 

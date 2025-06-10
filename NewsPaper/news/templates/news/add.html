@@ -1,0 +1,106 @@
+{% extends 'layout/default.html' %}
+
+{% block style %}
+      div, input {
+        margin-top: 25px;
+      }
+
+{% endblock style %}
+
+{% block title %}
+{% if 'edit' in request.path %}
+    Редактирование публикации
+{% else %}
+    Добавление публикации
+{% endif %}
+{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card">
+                <div class="card-header">
+                    <h2 class="mb-0">
+                        {% if 'edit' in request.path %}
+                            Редактирование публикации
+                        {% else %}
+                            Добавление публикации
+                        {% endif %}
+                    </h2>
+                </div>
+                <div class="card-body">
+                    <form method="post">
+                        {% csrf_token %}
+                        
+                        <div class="mb-3">
+                            {{ form.post_status.label_tag }}
+                            {{ form.post_status }}
+                        </div>
+
+                        <div class="mb-3">
+                            {{ form.category_input.label_tag }}
+                            {{ form.category_input }}
+                            <small class="form-text text-muted">Введите названия категорий через запятую</small>
+                        </div>
+
+                        <div class="mb-3">
+                            {{ form.heading.label_tag }}
+                            {{ form.heading }}
+                        </div>
+
+                        <div class="mb-3">
+                            {{ form.text_post.label_tag }}
+                            {{ form.text_post }}
+                        </div>
+
+                        {{ form.author }}
+
+                        <div class="d-grid gap-2">
+                            <button type="submit" class="btn btn-primary">
+                                {% if 'edit' in request.path %}
+                                    Сохранить изменения
+                                {% else %}
+                                    Опубликовать
+                                {% endif %}
+                            </button>
+                            <a href="{% url 'news:home' %}" class="btn btn-secondary">Отмена</a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+.category-checkboxes {
+    max-height: 200px;
+    overflow-y: auto;
+    border: 1px solid #dee2e6;
+    padding: 15px;
+    border-radius: 4px;
+    background-color: #f8f9fa;
+}
+.category-checkboxes ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+.category-checkboxes li {
+    margin-bottom: 8px;
+}
+.category-checkboxes li:last-child {
+    margin-bottom: 0;
+}
+.category-checkboxes label {
+    display: flex;
+    align-items: center;
+    margin: 0;
+    cursor: pointer;
+}
+.category-checkboxes input[type="checkbox"] {
+    margin-right: 8px;
+}
+</style>
+{% endblock %}

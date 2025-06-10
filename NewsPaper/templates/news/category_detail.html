@@ -1,0 +1,61 @@
+{% extends "layout/default.html" %}
+{% load static %}
+
+{% block title %}{{ category.topic }}{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="row">
+        <div class="col-12">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h1>{{ category.topic }}</h1>
+                {% if user.is_authenticated %}
+                    {% if is_subscribed %}
+                        <form method="post" action="{% url 'news:unsubscribe' category.id %}" class="mb-0" id="unsubscribeForm">
+                            {% csrf_token %}
+                            <button type="submit" class="btn btn-danger">
+                                <i class="fas fa-times-circle"></i> Отписаться от категории
+                            </button>
+                        </form>
+                    {% else %}
+                        <form method="post" action="{% url 'news:subscribe' category.id %}" class="mb-0" id="subscribeForm">
+                            {% csrf_token %}
+                            <button type="submit" class="btn btn-success">
+                                <i class="fas fa-check-circle"></i> Подписаться на категорию
+                            </button>
+                        </form>
+                    {% endif %}
+                {% else %}
+                    <p class="text-muted mb-0">
+                        <a href="{% url 'account_login' %}">Войдите</a>, чтобы подписаться на эту категорию
+                    </p>
+                {% endif %}
+            </div>
+
+            <h2 class="mb-3">Публикации в этой категории:</h2>
+            
+            {% if posts %}
+                {% for post in posts %}
+                    <div class="card mb-3">
+                        <div class="card-body">
+                            <h5 class="card-title">{{ post.heading }}</h5>
+                            <p class="card-text">{{ post.preview }}</p>
+                            <div class="d-flex justify-content-between align-items-center">
+                                <small class="text-muted">
+                                    {{ post.date_time_creation|date:"d.m.Y H:i" }} | 
+                                    Автор: {{ post.author }}
+                                </small>
+                                <a href="{% url 'news:news_id' post.id %}" class="btn btn-outline-primary btn-sm">
+                                    Читать далее
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                {% endfor %}
+            {% else %}
+                <p class="text-muted">В этой категории пока нет публикаций.</p>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %} 

@@ -1,0 +1,119 @@
+{% extends 'layout/default.html' %}
+{% load custom_filters %}
+
+{% block title %}
+    Категория: {{ category.topic }}
+{% endblock %}
+
+{% block content %}
+    <div class="category-header">
+        <h2>Категория: {{ category.topic|censor }}</h2>
+        
+        {% if user.is_authenticated %}
+            <div class="subscription-buttons">
+                {% if user in category.subscribers.all %}
+                    <a href="{% url 'news:unsubscribe_category' category.id %}" class="btn btn-danger">Отписаться от категории</a>
+                {% else %}
+                    <a href="{% url 'news:subscribe_category' category.id %}" class="btn btn-success">Подписаться на категорию</a>
+                {% endif %}
+            </div>
+        {% endif %}
+    </div>
+
+    <div class="category-posts">
+        <h3>Публикации в этой категории:</h3>
+        
+        {% if category.post_set.all %}
+            {% for post in category.post_set.all %}
+                <div class="post-item">
+                    <h4>
+                        <a href="{% url 'news:news_id' post.id %}">{{ post.heading|censor }}</a>
+                    </h4>
+                    <div class="post-meta">
+                        <span class="post-date">{{ post.date_time_creation|date:"d.m.Y H:i" }}</span>
+                        <span class="post-author">Автор: {{ post.author }}</span>
+                        <span class="post-rating">Рейтинг: {{ post.rating_post }}</span>
+                    </div>
+                    <div class="post-preview">
+                        {{ post.preview|censor }}
+                    </div>
+                    <div class="post-type">
+                        {% if post.post_status == 'AR' %}
+                            <span class="badge badge-primary">Статья</span>
+                        {% else %}
+                            <span class="badge badge-info">Новость</span>
+                        {% endif %}
+                    </div>
+                </div>
+                {% if not forloop.last %}
+                    <hr>
+                {% endif %}
+            {% endfor %}
+        {% else %}
+            <p>В данной категории пока нет публикаций.</p>
+        {% endif %}
+    </div>
+
+    {% include 'news/parts/paginator.html' %}
+{% endblock %}
+
+{% block style %}
+<style>
+    .category-header {
+        margin-bottom: 20px;
+        padding: 15px;
+        background-color: #f8f9fa;
+        border-radius: 5px;
+    }
+
+    .subscription-buttons {
+        margin-top: 10px;
+    }
+
+    .post-item {
+        margin: 20px 0;
+        padding: 15px;
+        border: 1px solid #dee2e6;
+        border-radius: 5px;
+    }
+
+    .post-meta {
+        color: #6c757d;
+        font-size: 0.9em;
+        margin: 10px 0;
+    }
+
+    .post-meta span {
+        margin-right: 15px;
+    }
+
+    .post-preview {
+        margin: 10px 0;
+    }
+
+    .post-type {
+        margin-top: 10px;
+    }
+
+    .badge {
+        padding: 5px 10px;
+        border-radius: 3px;
+    }
+
+    .badge-primary {
+        background-color: #007bff;
+        color: white;
+    }
+
+    .badge-info {
+        background-color: #17a2b8;
+        color: white;
+    }
+
+    hr {
+        margin: 20px 0;
+        border: 0;
+        border-top: 1px solid #dee2e6;
+    }
+</style>
+{% endblock %} 
